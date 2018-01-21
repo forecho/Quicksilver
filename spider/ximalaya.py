@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup
 import requests
 import json
 from podgen import Media, Podcast, Person, Category, htmlencode
-import datetime
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import pytz
 
 
@@ -33,7 +34,7 @@ class Ximalaya():
         self.podcast.authors.append(Person("forecho", 'caizhenghai@gmail.com'))
         self.podcast.website = self.url
         self.podcast.copyright = 'cc-by'
-        self.podcast.description = htmlencode(soup.find('div', 'mid_intro').get_text())
+        self.podcast.description = soup.find('div', 'mid_intro').get_text()
         self.podcast.language = 'cn'
         self.podcast.feed_url = 'http://podcast.forecho.com/ximalaya/%s.rss' % self.album_id
         self.podcast.category = Category('Technology', 'Podcasting')
@@ -46,7 +47,7 @@ class Ximalaya():
             self.detail(sound_id)
         # 生成文件
         # print self.podcast.rss_str()
-        self.podcast.rss_file('ximalaya/%d.rss' % self.album_id, minimize=True)
+        self.podcast.rss_file('ximalaya/%s.rss' % self.album_id, minimize=True)
 
     def detail(self, sound_id):
         detail_url = 'http://www.ximalaya.com/tracks/%s.json' % sound_id
@@ -56,7 +57,7 @@ class Ximalaya():
         episode = self.podcast.add_episode()
         episode.id = str(item['id'])
         episode.title = item['title']
-        episode.summary = htmlencode(item['intro'])
+        episode.summary = item['intro']
         episode.link = 'http://www.ximalaya.com/sound/%d' % item['id']
         episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
         episode.publication_date = self.reduction_time(item['time_until_now'], item['formatted_created_at'])
@@ -66,17 +67,16 @@ class Ximalaya():
     # 时间转换 第一个参数是  "3年前", "12月11日 17:00"
     @staticmethod
     def reduction_time(time_until_now, created_at):
-        now = datetime.datetime.now().date()
-        reduction_year = now.year
+        reduction_year = datetime.now().year
         if '年前' in time_until_now:
-            year = time_until_now.split('年前')[0]
-            reduction_year = now.replace(now.year - int(year)).year
+            year = int(time_until_now.split('年前')[0])
+            reduction_year = (datetime.today() - relativedelta(years=year)).year
         elif '月前' in time_until_now:
-            month = time_until_now.split('月前')[0]
-            reduction_year = now.replace(month=now.month - int(month)).year
+            month = int(time_until_now.split('月前')[0])
+            reduction_year = (datetime.today() - relativedelta(months=month)).year
         elif '天前' in time_until_now:
-            day = time_until_now.split('天前')[0]
-            reduction_year = now.replace(day=now.day - int(day)).year
+            day = int(time_until_now.split('天前')[0])
+            reduction_year = (datetime.today() - relativedelta(days=day)).year
 
-        date = datetime.datetime.strptime(created_at, "%m月%d日 %H:%M")
-        return datetime.datetime(reduction_year, date.month, date.day, date.hour, date.second, tzinfo=pytz.utc)
+        date = datetime.strptime(created_at, "%m月%d日 %H:%M")
+        return datetime(reduction_year, date.month, date.day, date.hour, date.second, tzinfo=pytz.utc)

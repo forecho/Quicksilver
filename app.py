@@ -8,7 +8,8 @@ sys.setdefaultencoding("utf-8")
 
 
 def main():
-    Ximalaya(12271374).album()
+    album_id = sys.argv[1]  # get token from command-line
+    Ximalaya(album_id).album()
 
 
 main()
