@@ -1,0 +1,6 @@
+.idea
+*.pyc
+*.rss
+sftp*
+config.yml
+.vscode
