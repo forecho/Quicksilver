@@ -1,0 +1,14 @@
+beautifulsoup4==4.6.0
+certifi==2018.1.18
+chardet==3.0.4
+dateutils==0.6.6
+future==0.16.0
+idna==2.6
+lxml==4.1.1
+podgen==1.0.0
+python-dateutil==2.6.1
+pytz==2017.3
+requests==2.18.4
+six==1.11.0
+tinytag==0.18.0
+urllib3==1.22

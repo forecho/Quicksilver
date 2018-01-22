@@ -19,3 +19,18 @@ $ sudo pip install requests
 $ sudo pip install lxml
 $ sudo pip install beautifulsoup4
 ```
+
+或者使用 virtualenv
+
+```shell
+$ sudo pip install virtualenv
+$ sudo virtualenv --no-site-packages podcast --always-copy
+$ pip install -r requirements.txt
+$ deactivate # 退出虚拟环境
+```
+
+## 使用
+
+```shell
+$ python app.py 8475135
+```

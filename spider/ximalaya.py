@@ -31,11 +31,12 @@ class Ximalaya():
         # 初始化
         self.podcast = Podcast()
         self.podcast.name = soup.find('div', 'detailContent_title').get_text()
-        self.podcast.authors.append(Person("forecho", 'caizhenghai@gmail.com'))
+        self.podcast.authors.append(Person("Powered by forecho", 'caizhenghai@gmail.com'))
         self.podcast.website = self.url
         self.podcast.copyright = 'cc-by'
         self.podcast.description = soup.find('div', 'mid_intro').get_text()
         self.podcast.language = 'cn'
+        self.podcast.image = soup.find('a', 'albumface180').find('img').get('src').split('!')[0]
         self.podcast.feed_url = 'http://podcast.forecho.com/ximalaya/%s.rss' % self.album_id
         self.podcast.category = Category('Technology', 'Podcasting')
         self.podcast.explicit = False
@@ -57,6 +58,7 @@ class Ximalaya():
         episode = self.podcast.add_episode()
         episode.id = str(item['id'])
         episode.title = item['title']
+        episode.image = item['cover_url_142']
         episode.summary = item['intro']
         episode.link = 'http://www.ximalaya.com/sound/%d' % item['id']
         episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
