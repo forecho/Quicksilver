@@ -58,7 +58,7 @@ class Ximalaya():
         episode = self.podcast.add_episode()
         episode.id = str(item['id'])
         episode.title = item['title']
-        episode.image = item['cover_url_142']
+        episode.image = item['cover_url_142'].split('?')[0]
         episode.summary = item['intro']
         episode.link = 'http://www.ximalaya.com/sound/%d' % item['id']
         episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
