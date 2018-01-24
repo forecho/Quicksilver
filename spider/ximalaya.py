@@ -6,7 +6,10 @@ import json
 from podgen import Media, Podcast, Person, Category, htmlencode
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from dateutil.tz import tzlocal
 import pytz
+
+from helper.humanize_time import humanize_time
 
 
 class Ximalaya():
@@ -69,16 +72,20 @@ class Ximalaya():
     # 时间转换 第一个参数是  "3年前", "12月11日 17:00"
     @staticmethod
     def reduction_time(time_until_now, created_at):
+        date = datetime.strptime(created_at, "%m月%d日 %H:%M")
         reduction_year = datetime.now().year
         if '年前' in time_until_now:
             year = int(time_until_now.split('年前')[0])
-            reduction_year = (datetime.today() - relativedelta(years=year)).year
+            reduction = (datetime.now(tzlocal()) - relativedelta(years=year))
+            if humanize_time(reduction) != ('%s years' % year):
+                reduction_year = (datetime.today() - relativedelta(years=year - 1)).year
+            else:
+                reduction_year = reduction.year
         elif '月前' in time_until_now:
             month = int(time_until_now.split('月前')[0])
-            reduction_year = (datetime.today() - relativedelta(months=month)).year
+            reduction_year = (datetime.now(tzlocal()) - relativedelta(months=month)).year
         elif '天前' in time_until_now:
             day = int(time_until_now.split('天前')[0])
-            reduction_year = (datetime.today() - relativedelta(days=day)).year
+            reduction_year = (datetime.now(tzlocal()) - relativedelta(days=day)).year
 
-        date = datetime.strptime(created_at, "%m月%d日 %H:%M")
         return datetime(reduction_year, date.month, date.day, date.hour, date.second, tzinfo=pytz.utc)

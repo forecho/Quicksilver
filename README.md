@@ -16,7 +16,7 @@ $ rm get-pip.py
 ```shell
 $ sudo pip install podgen
 $ sudo pip install requests
-$ sudo pip install lxml
+$ sudo pip install lxml 或者 sudo apt-get install python-lxml
 $ sudo pip install beautifulsoup4
 ```
 
