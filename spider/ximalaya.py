@@ -78,7 +78,7 @@ class Ximalaya():
             year = int(time_until_now.split('年前')[0])
             reduction = (datetime.now(tzlocal()) - relativedelta(years=year))
             if humanize_time(reduction) != ('%s years' % year):
-                reduction_year = (datetime.today() - relativedelta(years=year - 1)).year
+                reduction_year = (datetime.now(tzlocal()) - relativedelta(years=year + 1)).year
             else:
                 reduction_year = reduction.year
         elif '月前' in time_until_now:
