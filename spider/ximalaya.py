@@ -59,7 +59,7 @@ class Ximalaya():
         episode.id = str(item['id'])
         episode.title = item['title']
         episode.image = item['cover_url_142'].split('?')[0]
-        episode.summary = item['intro'].replace('\n', '')
+        episode.summary = (item['intro'].replace('\n', '') if item['intro'] else '')
         episode.link = 'http://www.ximalaya.com/sound/%d' % item['id']
         episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
         episode.publication_date = self.reduction_time(date)
