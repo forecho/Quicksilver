@@ -3,13 +3,9 @@
 from bs4 import BeautifulSoup
 import requests
 import json
-from podgen import Media, Podcast, Person, Category, htmlencode
+from podgen import Media, Podcast, Person, Category
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from dateutil.tz import tzlocal
 import pytz
-
-from helper.humanize_time import humanize_time
 
 
 class Ximalaya():
@@ -27,7 +23,6 @@ class Ximalaya():
         }
 
     def album(self):
-
         page = requests.get(self.url, headers=self.header)
         soup = BeautifulSoup(page.content, "lxml")
 
@@ -47,13 +42,15 @@ class Ximalaya():
         self.podcast.owner = Person("forecho", 'caizhenghai@gmail.com')
 
         sound_ids = soup.find('div', class_='personal_body').get('sound_ids').split(',')
+
         for sound_id in sound_ids:
-            self.detail(sound_id)
+            date = soup.find('li', sound_id=sound_id).find('div', class_='operate').get_text().strip()
+            self.detail(sound_id, date)
         # 生成文件
         # print self.podcast.rss_str()
         self.podcast.rss_file('ximalaya/%s.rss' % self.album_id, minimize=True)
 
-    def detail(self, sound_id):
+    def detail(self, sound_id, date):
         detail_url = 'http://www.ximalaya.com/tracks/%s.json' % sound_id
         response = requests.get(detail_url, headers=self.header)
         item = json.loads(response.content)
@@ -62,30 +59,16 @@ class Ximalaya():
         episode.id = str(item['id'])
         episode.title = item['title']
         episode.image = item['cover_url_142'].split('?')[0]
-        episode.summary = item['intro']
+        episode.summary = item['intro'].replace('\n', '')
         episode.link = 'http://www.ximalaya.com/sound/%d' % item['id']
         episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
-        episode.publication_date = self.reduction_time(item['time_until_now'], item['formatted_created_at'])
+        episode.publication_date = self.reduction_time(date)
         episode.media = Media(item['play_path_64'], 454599964)
         print item['title']
 
-    # 时间转换 第一个参数是  "3年前", "12月11日 17:00"
+    # 时间转换
     @staticmethod
-    def reduction_time(time_until_now, created_at):
-        date = datetime.strptime(created_at, "%m月%d日 %H:%M")
-        reduction_year = datetime.now().year
-        if '年前' in time_until_now:
-            year = int(time_until_now.split('年前')[0])
-            reduction = (datetime.now(tzlocal()) - relativedelta(years=year))
-            if humanize_time(reduction) != ('%s years' % year):
-                reduction_year = (datetime.now(tzlocal()) - relativedelta(years=year + 1)).year
-            else:
-                reduction_year = reduction.year
-        elif '月前' in time_until_now:
-            month = int(time_until_now.split('月前')[0])
-            reduction_year = (datetime.now(tzlocal()) - relativedelta(months=month)).year
-        elif '天前' in time_until_now:
-            day = int(time_until_now.split('天前')[0])
-            reduction_year = (datetime.now(tzlocal()) - relativedelta(days=day)).year
-
-        return datetime(reduction_year, date.month, date.day, date.hour, date.second, tzinfo=pytz.utc)
+    def reduction_time(date):
+        timestamp = datetime.strptime(date, "%Y-%m-%d")
+        return datetime(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.second,
+                        tzinfo=pytz.utc)
