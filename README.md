@@ -31,6 +31,14 @@ $ deactivate # 退出虚拟环境
 
 ## 使用
 
+单个专辑
+
 ```shell
 $ python app.py 8475135
+```
+
+多个专辑，参数使用英文逗号
+
+```shell
+$ python app.py 8475135,269179
 ```

@@ -8,8 +8,9 @@ sys.setdefaultencoding("utf-8")
 
 
 def main():
-    album_id = sys.argv[1]  # get token from command-line
-    Ximalaya(album_id).album()
-
+    album_ids = sys.argv[1]  # get token from command-line
+    # print album_ids.split(',')
+    for album_id in album_ids.split(','):
+        Ximalaya(album_id).album()
 
 main()
