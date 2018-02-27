@@ -65,12 +65,12 @@ class Ximalaya():
         episode.publication_date = self.reduction_time(
             date, item['formatted_created_at'])
         episode.media = Media(item['play_path_64'], 454599964)
-        print item['title']
+        print self.podcast.name + '=====' + item['title']
 
     # 时间转换 第一个参数是年月日 第二个参数"12月11日 17:00"
     @staticmethod
     def reduction_time(date, created_date):
-        created_at = datetime.strptime(created_date, "%m月%d日 %H:%M")
         timestamp = datetime.strptime(date, "%Y-%m-%d")
+        created_at = datetime.strptime(created_date.split(' ')[1], "%H:%M")
         return datetime(timestamp.year, timestamp.month, timestamp.day, created_at.hour, created_at.minute,
                         tzinfo=pytz.utc)
