@@ -62,13 +62,15 @@ class Ximalaya():
         episode.summary = (item['intro'].replace('\n', '') if item['intro'] else '')
         episode.link = 'http://www.ximalaya.com/sound/%d' % item['id']
         episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
-        episode.publication_date = self.reduction_time(date)
+        episode.publication_date = self.reduction_time(
+            date, item['formatted_created_at'])
         episode.media = Media(item['play_path_64'], 454599964)
         print item['title']
 
-    # 时间转换
+    # 时间转换 第一个参数是年月日 第二个参数"12月11日 17:00"
     @staticmethod
-    def reduction_time(date):
+    def reduction_time(date, created_date):
+        created_at = datetime.strptime(created_date, "%m月%d日 %H:%M")
         timestamp = datetime.strptime(date, "%Y-%m-%d")
-        return datetime(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.second,
+        return datetime(timestamp.year, timestamp.month, timestamp.day, created_at.hour, created_at.minute,
                         tzinfo=pytz.utc)
