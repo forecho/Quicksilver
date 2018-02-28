@@ -34,13 +34,14 @@ $ deactivate # 退出虚拟环境
 单个专辑
 
 ```shell
-$ python app.py 8475135
+$ python app.py ximalaya 8475135 # 喜马拉雅
+$ python app.py qingting 212192  # 蜻蜓fm
 ```
 
 多个专辑，参数使用英文逗号
 
 ```shell
-$ python app.py 8475135,269179
+$ python app.py xiamalaya 8475135,269179
 ```
 
 [目前已经支持的节目单](https://github.com/forecho/Quicksilver/wiki/%E7%9B%AE%E5%89%8D%E5%B7%B2%E7%BB%8F%E6%94%AF%E6%8C%81%E7%9A%84%E8%8A%82%E7%9B%AE%E5%88%97%E8%A1%A8)，目前此脚本只支持喜马拉雅的专辑转换为 RSS，如果需要更多节目，欢迎提交 [Issues](https://github.com/forecho/Quicksilver/issues)。
