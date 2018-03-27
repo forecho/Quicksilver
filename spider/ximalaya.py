@@ -12,7 +12,7 @@ class Ximalaya():
     def __init__(self, album_id):
         self.podcast = None
         self.album_id = album_id
-        self.url = 'http://www.ximalaya.com/album/%s/' % album_id
+        self.url = 'http://www.ximalaya.com/album/%s' % album_id
         self.header = {
             'Accept': 'application/json, text/javascript, */*; q=0.01',
             'X-Requested-With': 'XMLHttpRequest',
@@ -25,6 +25,29 @@ class Ximalaya():
     def album(self):
         page = requests.get(self.url, headers=self.header)
         soup = BeautifulSoup(page.content, "lxml")
+
+        #find zhubo id
+        zhubo_id = soup.find('div', 'picture').a['href'][7:-1]
+
+        #create url with zhubo id
+        new_url = self.url[0:24] + zhubo_id + '/' + self.url[24:]
+
+        #find the page count
+        albumsoundcount = int(soup.find('span', 'albumSoundcount').get_text()[1:-1])
+        pagecount_full = albumsoundcount/100
+        if ( albumsoundcount%100 == 0 ):
+            pagecount = pagecount_full
+        else:
+            pagecount = pagecount_full + 1
+
+        # get all pages and soups
+        page_list = []
+        soup_list = []
+        count = 1
+        while (count <= pagecount):
+            page_list.append(requests.get(new_url + '?page=' + '%d'%count, headers=self.header))
+            soup_list.append(BeautifulSoup(page_list[count-1].content, "lxml"))
+            count = count + 1
 
         # 初始化
         self.podcast = Podcast()
@@ -41,11 +64,18 @@ class Ximalaya():
         self.podcast.complete = False
         self.podcast.owner = Person("forecho", 'caizhenghai@gmail.com')
 
-        sound_ids = soup.find('div', class_='personal_body').get('sound_ids').split(',')
+        #sound_ids on all pages
+        sound_ids_list = []
+        for item in soup_list:
+            sound_ids_list.append(item.find('div', class_='personal_body').get('sound_ids').split(','))
 
-        for sound_id in sound_ids:
-            date = soup.find('li', sound_id=sound_id).find('div', class_='operate').get_text().strip()
-            self.detail(sound_id, date)
+        count = 1
+        while (count <= pagecount):
+            for sound_id in sound_ids_list[count-1]:
+                date = soup_list[count-1].find('li', sound_id=sound_id).find('div', class_='operate').get_text().strip()
+                self.detail(sound_id, date)
+            count = count + 1
+
         # 生成文件
         # print self.podcast.rss_str()
         self.podcast.rss_file('ximalaya/%s.rss' % self.album_id, minimize=True)
