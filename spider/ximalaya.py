@@ -88,14 +88,19 @@ class Ximalaya():
         episode = self.podcast.add_episode()
         episode.id = str(item['id'])
         episode.title = item['title']
-        episode.image = item['cover_url_142'].split('?')[0]
+        image = item['cover_url_142'].split('?')[0]
+        if (image[-4:] == '.gif'):
+            episode.image = self.podcast.image
+        else:
+            episode.image = image
         episode.summary = (item['intro'].replace('\n', '') if item['intro'] else '')
         episode.link = 'http://www.ximalaya.com/sound/%d' % item['id']
         episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
         episode.publication_date = self.reduction_time(
             date, item['formatted_created_at'])
         episode.media = Media(item['play_path_64'], 454599964)
-        print self.podcast.name + '=====' + item['title']
+        # 坑爹的 Windows CMD https://www.v2ex.com/t/98936
+        print self.podcast.name + '=====' + item['title'].encode('gbk', 'ignore').decode('gbk')
 
     # 时间转换 第一个参数是年月日 第二个参数"12月11日 17:00"
     @staticmethod

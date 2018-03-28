@@ -46,7 +46,7 @@ $ python app.py qingting 209678  # 蜻蜓fm
 多个专辑，参数使用英文逗号
 
 ```shell
-$ python app.py xiamalaya 8475135,269179
+$ python app.py ximalaya 8475135,269179
 $ python app.py qingting 209678,207865
 ```
 
