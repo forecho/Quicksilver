@@ -22,6 +22,9 @@ class Qingting(object):
         album_soup = BeautifulSoup(album_page.content, "lxml")
         count_text = album_soup.find('span', '_1QL0').get_text().encode('gbk')
         count = filter(str.isdigit, count_text)
+        # 最多500个音频
+        if int(count) > 500:
+            count = '500'
 
         album_info_content = requests.get(self.album_info_api).content
         album_info_data = json.loads(album_info_content)
