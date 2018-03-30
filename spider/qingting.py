@@ -1,7 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import requests
-from bs4 import BeautifulSoup
 import json
 from podgen import Media, Podcast, Person, Category
 from datetime import datetime
@@ -13,22 +12,14 @@ class Qingting(object):
         self.podcast = None
         self.album_id = album_id
         self.url = 'http://www.qingting.fm/channels/{}'.format(album_id)
-        self.album_list_api = "http://api2.qingting.fm/v6/media/channelondemands/{}/programs/order/0/curpage/1/pagesize/".format(
+        self.album_list_api = "http://api2.qingting.fm/v6/media/channelondemands/{}/programs/order/0/curpage/1/pagesize/999".format(
             album_id)
         self.album_info_api = "http://api2.qingting.fm/v6/media/channelondemands/{}".format(album_id)
 
     def album(self):
-        album_page = requests.get(self.url)
-        album_soup = BeautifulSoup(album_page.content, "lxml")
-        count_text = album_soup.find('span', '_1QL0').get_text().encode('gbk')
-        count = filter(str.isdigit, count_text)
-        # 最多500个音频
-        if int(count) > 500:
-            count = '500'
-
         album_info_content = requests.get(self.album_info_api).content
         album_info_data = json.loads(album_info_content)
-        album_list_content = requests.get(self.album_list_api + count).content
+        album_list_content = requests.get(self.album_list_api).content
         album_list_data = json.loads(album_list_content)
 
         self.podcast = Podcast()
