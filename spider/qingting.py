@@ -46,7 +46,7 @@ class Qingting(object):
             episode = self.podcast.add_episode()
             episode.id = str(each['id'])
             episode.title = each['title']
-            print each['title']
+            print self.podcast.name + '=====' + each['title']
             episode.image = album_info_data['data']['thumbs']['small_thumb'].replace('!200', '')
             episode.summary = each['title']
             episode.link = 'http://www.qingting.fm/channels/{}/programs/{}'.format(self.album_id, each['id'])
