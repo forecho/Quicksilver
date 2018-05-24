@@ -57,7 +57,10 @@ class Ximalaya():
                 episode.image = self.podcast.image
             else:
                 episode.image = image
-            episode.summary = soup_info.find('article', 'intro') ? soup_info.find('article', 'intro').get_text().encode('gbk', 'ignore').decode('gbk') : each['trackName']
+            if soup_info.find('article', 'intro'):
+                episode.summary = soup_info.find('article', 'intro').get_text().encode('gbk', 'ignore').decode('gbk')
+            else:
+                episode.summary = each['trackName']
             episode.link = 'http://www.ximalaya.com/%s' % each['albumUrl']
             episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
             episode.publication_date = self.reduction_time(soup_info.find('span', 'time').get_text())
