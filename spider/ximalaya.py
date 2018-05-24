@@ -46,26 +46,31 @@ class Ximalaya():
         album_list_data = json.loads(album_list_content.decode('utf-8'))
         count = len(album_list_data['data']['tracksAudioPlay'])
         for each in album_list_data['data']['tracksAudioPlay']:
-            page_info = requests.get('http://www.ximalaya.com/%s' % each['trackUrl'], headers=self.header)
-            soup_info = BeautifulSoup(page_info.content, "lxml")
-            episode = self.podcast.add_episode()
-            episode.id = str(each['index'])
-            episode.title = each['trackName']
-            print self.podcast.name + '=====' + each['trackName']
-            image = each['trackCoverPath'].split('!')[0]
-            if (image[-4:] == '.gif'):
-                episode.image = self.podcast.image
-            else:
-                episode.image = image
-            if soup_info.find('article', 'intro'):
-                episode.summary = soup_info.find('article', 'intro').get_text().encode('gbk', 'ignore').decode('gbk')
-            else:
-                episode.summary = each['trackName']
-            episode.link = 'http://www.ximalaya.com/%s' % each['albumUrl']
-            episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
-            episode.publication_date = self.reduction_time(soup_info.find('span', 'time').get_text())
-            episode.media = Media(each['src'], each['duration'])
-            episode.position = count - each['index'] + 1
+            try:
+                page_info = requests.get('http://www.ximalaya.com/%s' % each['trackUrl'], headers=self.header)
+                soup_info = BeautifulSoup(page_info.content, "lxml")
+                episode = self.podcast.add_episode()
+                episode.id = str(each['index'])
+                episode.title = each['trackName']
+                print self.podcast.name + '=====' + each['trackName']
+                image = each['trackCoverPath'].split('!')[0]
+                if (image[-4:] == '.gif'):
+                    episode.image = self.podcast.image
+                else:
+                    episode.image = image
+                if soup_info.find('article', 'intro'):
+                    episode.summary = soup_info.find('article', 'intro').get_text().encode('gbk', 'ignore').decode('gbk')
+                else:
+                    episode.summary = each['trackName']
+                episode.link = 'http://www.ximalaya.com/%s' % each['albumUrl']
+                episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
+                episode.publication_date = self.reduction_time(soup_info.find('span', 'time').get_text())
+                episode.media = Media(each['src'], each['duration'])
+                episode.position = count - each['index'] + 1
+            except Exception as e:
+                print('异常:', e)
+                print('异常 URL:', page_info)
+            
         # 生成文件
         # print self.podcast.rss_str()
         self.podcast.rss_file('ximalaya/%s.rss' % self.album_id, minimize=True)
