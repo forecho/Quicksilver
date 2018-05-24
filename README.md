@@ -30,7 +30,7 @@ $ sudo pip install beautifulsoup4
 ```shell
 $ sudo pip install virtualenv
 $ sudo virtualenv --no-site-packages podcast --always-copy
-$ pip install -r requirements.txt
+$ sudo pip install -r requirements.txt
 $ deactivate # 退出虚拟环境
 ```
 
