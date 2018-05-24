@@ -52,6 +52,8 @@ $ python app.py qingting 209678,207865
 
 [目前已经支持的节目单](https://github.com/forecho/Quicksilver/wiki/%E7%9B%AE%E5%89%8D%E5%B7%B2%E7%BB%8F%E6%94%AF%E6%8C%81%E7%9A%84%E8%8A%82%E7%9B%AE%E5%88%97%E8%A1%A8)，目前此脚本只支持喜马拉雅和蜻蜓fm的专辑转换为 RSS，如果需要更多节目，欢迎提交 [Issues](https://github.com/forecho/Quicksilver/issues)。
 
+**随着节目越来越多，服务器压力也比较大，所以从2018年5月24日开始，要我添加新的节目的人，需要为每个节目承担20块钱的服务器费用。（当然你也可以选择自行搭建服务）**
+
 
 ## 赞助
 
