@@ -61,7 +61,7 @@ class Ximalaya():
             episode.link = 'http://www.ximalaya.com/%s' % each['albumUrl']
             episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
             episode.publication_date = self.reduction_time(soup_info.find('span', 'time').get_text())
-            episode.media = Media(each['src']), each['duration'])
+            episode.media = Media(each['src'], each['duration'])
             episode.position = count - index['id'] + 1
         # 生成文件
         # print self.podcast.rss_str()
