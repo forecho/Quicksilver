@@ -19,7 +19,7 @@ class Ximalaya():
             'X-Requested-With': 'XMLHttpRequest',
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Referer': self.url,
+            'Referer': self.album_url,
             'Cookie': '_ga=GA1.2.1628478964.1476015684; _gat=1',
         }
 
@@ -31,7 +31,7 @@ class Ximalaya():
         self.podcast = Podcast()
         self.podcast.name = soup.find('h1', 'title').get_text()
         self.podcast.authors.append(Person("Powered by forecho", 'caizhenghai@gmail.com'))
-        self.podcast.website = self.url
+        self.podcast.website = self.album_url
         self.podcast.copyright = 'cc-by'
         self.podcast.description = soup.find('div', 'album-intro').get_text()
         self.podcast.language = 'cn'
@@ -42,14 +42,14 @@ class Ximalaya():
         self.podcast.complete = False
         self.podcast.owner = Person("forecho", 'caizhenghai@gmail.com')
 
-        album_list_content = requests.get(self.album_list_api).content
-        album_list_data = json.loads(album_list_content)
+        album_list_content = requests.get(self.album_list_api, headers=self.header).content
+        album_list_data = json.loads(album_list_content.decode('utf-8'))
         count = len(album_list_data['data']['tracksAudioPlay'])
         for each in album_list_data['data']['tracksAudioPlay']:
             page_info = requests.get('http://www.ximalaya.com/%s' % each['trackUrl'], headers=self.header)
             soup_info = BeautifulSoup(page_info.content, "lxml")
             episode = self.podcast.add_episode()
-            episode.id = str(index['id'])
+            episode.id = str(each['index'])
             episode.title = each['trackName']
             print self.podcast.name + '=====' + each['trackName']
             image = each['trackCoverPath'].split('?')[0]
@@ -57,12 +57,12 @@ class Ximalaya():
                 episode.image = self.podcast.image
             else:
                 episode.image = image
-            episode.summary = soup_info.find('div', 'intro').get_text()
+            episode.summary = soup_info.find('article', 'intro').get_text().decode('utf-8')
             episode.link = 'http://www.ximalaya.com/%s' % each['albumUrl']
             episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
             episode.publication_date = self.reduction_time(soup_info.find('span', 'time').get_text())
             episode.media = Media(each['src'], each['duration'])
-            episode.position = count - index['id'] + 1
+            episode.position = count - each['index'] + 1
         # 生成文件
         # print self.podcast.rss_str()
         self.podcast.rss_file('ximalaya/%s.rss' % self.album_id, minimize=True)
