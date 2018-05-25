@@ -54,7 +54,7 @@ class Ximalaya():
                 episode.title = each['trackName']
                 print self.podcast.name + '=====' + each['trackName']
                 image = each['trackCoverPath'].split('!')[0]
-                if (image[-4:] == '.gif'):
+                if (image[-4:] == '.gif' or image[-4:] == '.bmp'):
                     episode.image = self.podcast.image
                 else:
                     episode.image = image
