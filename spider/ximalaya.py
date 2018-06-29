@@ -69,9 +69,7 @@ class Ximalaya():
                 episode.position = count - each['index'] + 1
             except Exception as e:
                 print('异常:', e)
-                print('异常 URL:', 'http://www.ximalaya.com/%s' % 
-                     
-                     )
+                print('异常 URL:', 'http://www.ximalaya.com%s' % each['trackUrl'])
             
         # 生成文件
         # print self.podcast.rss_str()
