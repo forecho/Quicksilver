@@ -64,7 +64,7 @@ class Ximalaya():
                 # else:
                 #     episode.summary = each['trackName']
                 episode.summary = each['trackName']
-                episode.link = 'http://www.ximalaya.com/%s' % each['albumUrl']
+                episode.link = 'http://www.ximalaya.com%s' % each['albumUrl']
                 episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
                 # print(soup_info)
                 # episode.publication_date = self.reduction_time(soup_info.find('span', 'time').get_text())
