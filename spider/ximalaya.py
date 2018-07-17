@@ -34,7 +34,7 @@ class Ximalaya():
         self.podcast.authors.append(Person("Powered by forecho", 'caizhenghai@gmail.com'))
         self.podcast.website = self.album_url
         self.podcast.copyright = 'cc-by'
-        if soup.find('div', 'album-intro').get_text():
+        if soup.find('div', 'album-intro') and soup.find('div', 'album-intro').get_text():
             self.podcast.description = soup.find('div', 'album-intro').get_text()
         else:
             self.podcast.description = self.podcast.name
