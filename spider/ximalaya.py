@@ -5,6 +5,7 @@ import requests
 import json
 from podgen import Media, Podcast, Person, Category
 from datetime import datetime
+import traceback
 import pytz
 
 
@@ -47,29 +48,32 @@ class Ximalaya():
         count = len(album_list_data['data']['tracksAudioPlay'])
         for each in album_list_data['data']['tracksAudioPlay']:
             try:
-                page_info = requests.get('http://www.ximalaya.com/%s' % each['trackUrl'], headers=self.header)
-                soup_info = BeautifulSoup(page_info.content, "lxml")
+                # page_info = requests.get('http://www.ximalaya.com%s' % each['trackUrl'], headers=self.header)
+                # soup_info = BeautifulSoup(page_info.content, "lxml")
                 episode = self.podcast.add_episode()
                 episode.id = str(each['index'])
                 episode.title = each['trackName']
-                print self.podcast.name + '=====' + each['trackName']
+                print(self.podcast.name + '=====' + each['trackName'])
                 image = each['trackCoverPath'].split('!')[0]
                 if (image[-4:] == '.gif' or image[-4:] == '.bmp'):
                     episode.image = self.podcast.image
                 else:
                     episode.image = image
-                if soup_info.find('article', 'intro'):
-                    episode.summary = soup_info.find('article', 'intro').get_text().encode('gbk', 'ignore').decode('gbk')
-                else:
-                    episode.summary = each['trackName']
+                # if soup_info.find('article', 'intro'):
+                #     episode.summary = soup_info.find('article', 'intro').get_text().encode('gbk', 'ignore').decode('gbk')
+                # else:
+                #     episode.summary = each['trackName']
+                episode.summary = each['trackName']
                 episode.link = 'http://www.ximalaya.com/%s' % each['albumUrl']
                 episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
-                episode.publication_date = self.reduction_time(soup_info.find('span', 'time').get_text())
+                # print(soup_info)
+                # episode.publication_date = self.reduction_time(soup_info.find('span', 'time').get_text())
                 episode.media = Media(each['src'], each['duration'])
                 episode.position = count - each['index'] + 1
             except Exception as e:
                 print('异常:', e)
-                print('异常 URL:', 'http://www.ximalaya.com/%s' % each['trackUrl'])
+                print('异常 URL:', 'http://www.ximalaya.com%s' % each['trackUrl'])
+                traceback.print_exc()
             
         # 生成文件
         # print self.podcast.rss_str()
