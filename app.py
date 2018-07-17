@@ -5,8 +5,8 @@ from spider.qingting import Qingting
 import sys
 import argparse
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
+# reload(sys)
+# sys.setdefaultencoding("utf-8")
 
 
 def main():
