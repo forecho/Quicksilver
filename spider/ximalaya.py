@@ -64,6 +64,7 @@ class Ximalaya():
                 # else:
                 #     episode.summary = each['trackName']
                 episode.summary = each['trackName']
+                episode.long_summary = each['trackName']
                 episode.link = 'http://www.ximalaya.com%s' % each['albumUrl']
                 episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
                 # print(soup_info)
