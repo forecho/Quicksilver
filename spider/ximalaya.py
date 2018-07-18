@@ -7,7 +7,8 @@ from podgen import Media, Podcast, Person, Category
 from datetime import datetime
 import traceback
 import pytz
-
+from dateutil.relativedelta import relativedelta
+from dateutil.tz import tzlocal
 
 class Ximalaya():
     def __init__(self, album_id):
@@ -51,8 +52,10 @@ class Ximalaya():
         count = len(album_list_data['data']['tracksAudioPlay'])
         for each in album_list_data['data']['tracksAudioPlay']:
             try:
-                # page_info = requests.get('http://www.ximalaya.com%s' % each['trackUrl'], headers=self.header)
-                # soup_info = BeautifulSoup(page_info.content, "lxml")
+                detail_url = 'http://www.ximalaya.com/tracks/%s.json' % each['trackId']
+                response = requests.get(detail_url, headers=self.header)
+                item = json.loads(response.content)
+
                 episode = self.podcast.add_episode()
                 episode.id = str(each['index'])
                 episode.title = each['trackName']
@@ -62,15 +65,13 @@ class Ximalaya():
                     episode.image = self.podcast.image
                 else:
                     episode.image = image
-                # if soup_info.find('article', 'intro'):
-                #     episode.summary = soup_info.find('article', 'intro').get_text().encode('gbk', 'ignore').decode('gbk')
-                # else:
-                #     episode.summary = each['trackName']
-                episode.summary = each['trackName']
+                if item['intro']:
+                    episode.summary = item['intro'].replace('\r\n', '')
+                else:
+                    episode.summary = each['trackName']
                 episode.link = 'http://www.ximalaya.com%s' % each['albumUrl']
                 episode.authors = [Person("forecho", 'caizhenghai@gmail.com')]
-                # print(soup_info)
-                # episode.publication_date = self.reduction_time(soup_info.find('span', 'time').get_text())
+                episode.publication_date = self.reduction_time(item['time_until_now'], item['formatted_created_at'])
                 episode.media = Media(each['src'], each['duration'])
                 episode.position = count - each['index'] + 1
             except Exception as e:
@@ -82,9 +83,23 @@ class Ximalaya():
         # print self.podcast.rss_str()
         self.podcast.rss_file('ximalaya/%s.rss' % self.album_id, minimize=True)
 
-    # 时间转换
+    # 时间转换 第一个参数是  "3年前", "12月11日 17:00"
     @staticmethod
-    def reduction_time(created_date):
-        timestamp = datetime.strptime(created_date, "%Y-%m-%d %H:%M:%S")
-        return datetime(timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.minute,
-                        tzinfo=pytz.utc)
+    def reduction_time(time_until_now, created_at):
+        date = datetime.strptime(created_at, "%m月%d日 %H:%M")
+        reduction_year = datetime.now().year
+        if '年前' in time_until_now:
+            year = int(time_until_now.split('年前')[0])
+            reduction = (datetime.now(tzlocal()) - relativedelta(years=year))
+            if humanize_time(reduction) != ('%s years' % year):
+                reduction_year = (datetime.now(tzlocal()) - relativedelta(years=year + 1)).year
+            else:
+                reduction_year = reduction.year
+        elif '月前' in time_until_now:
+            month = int(time_until_now.split('月前')[0])
+            reduction_year = (datetime.now(tzlocal()) - relativedelta(months=month)).year
+        elif '天前' in time_until_now:
+            day = int(time_until_now.split('天前')[0])
+            reduction_year = (datetime.now(tzlocal()) - relativedelta(days=day)).year
+
+        return datetime(reduction_year, date.month, date.day, date.hour, date.second, tzinfo=pytz.utc)
