@@ -5,6 +5,7 @@ import traceback
 from datetime import datetime
 
 import pytz
+import math
 import requests
 from podgen import Media, Podcast, Person, Category
 
@@ -13,8 +14,9 @@ class Ximalaya():
     def __init__(self, album_id):
         self.podcast = None
         self.album_id = album_id
+        self.page_size = 30
         self.album_info_url = "https://www.ximalaya.com/revision/album?albumId={}"
-        self.album_list_url = "https://www.ximalaya.com/revision/play/album?albumId={}&pageNum={}"
+        self.album_list_url = "https://www.ximalaya.com/revision/play/album?albumId={}&pageNum={}&pageSize={}"
         self.detail_url = "https://mobile.ximalaya.com/v1/track/baseInfo?device=android&trackId={}"
         self.album_url = "https://www.ximalaya.com/album/{}"
         self.header = {
@@ -50,8 +52,9 @@ class Ximalaya():
             self.podcast.complete = False
             self.podcast.owner = Person("forecho", 'caizhenghai@gmail.com')
             pageNum = 1
-            while pageNum < album_info_data['tracksInfo']['trackTotalCount']:
-                album_list = requests.get(self.album_list_url.format(self.album_id, pageNum),
+            trackTotalCount = math.ceil(album_info_data['tracksInfo']['trackTotalCount'] / self.page_size)
+            while pageNum <= trackTotalCount:
+                album_list = requests.get(self.album_list_url.format(self.album_id, pageNum, self.page_size),
                                           headers=self.header).content
                 album_list_content = json.loads(album_list.decode('utf-8'))
                 count = len(album_list_content['data']['tracksAudioPlay'])
@@ -83,8 +86,8 @@ class Ximalaya():
                         traceback.print_exc()
                 # 生成文件
                 # print self.podcast.rss_str()
-                self.podcast.rss_file('ximalaya/%s.rss' % self.album_id, minimize=True)
                 pageNum = pageNum + 1
+            self.podcast.rss_file('ximalaya/%s.rss' % self.album_id, minimize=True)
 
     # 时间转换 参数 毫秒时间戳
     @staticmethod
