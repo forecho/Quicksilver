@@ -52,7 +52,8 @@ class Ximalaya():
             self.podcast.complete = False
             self.podcast.owner = Person("forecho", 'caizhenghai@gmail.com')
             pageNum = 1
-            trackTotalCount = math.ceil(album_info_data['tracksInfo']['trackTotalCount'] / self.page_size)
+            # py2 +1
+            trackTotalCount = math.ceil(album_info_data['tracksInfo']['trackTotalCount'] / self.page_size) + 1
             while pageNum <= trackTotalCount:
                 album_list = requests.get(self.album_list_url.format(self.album_id, pageNum, self.page_size),
                                           headers=self.header).content
