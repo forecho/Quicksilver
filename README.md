@@ -21,9 +21,6 @@ $ rm get-pip.py
 ```shell
 $ sudo pip install podgen
 $ sudo pip install requests
-$ sudo pip install lxml 或者 sudo apt-get install python-lxml
-$ sudo pip install twisted 或者 sudo apt-get install python-twisted
-$ sudo pip install beautifulsoup4
 ```
 
 或者使用 virtualenv
