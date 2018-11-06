@@ -1,11 +1,11 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import json
+import math
 import traceback
 from datetime import datetime
 
 import pytz
-import math
 import requests
 from podgen import Media, Podcast, Person, Category
 
@@ -51,11 +51,11 @@ class Ximalaya():
             self.podcast.explicit = False
             self.podcast.complete = False
             self.podcast.owner = Person("forecho", 'caizhenghai@gmail.com')
-            pageNum = 1
+            page_num = 1
             # py2 +1
-            trackTotalCount = math.ceil(album_info_data['tracksInfo']['trackTotalCount'] / self.page_size) + 1
-            while pageNum <= trackTotalCount:
-                album_list = requests.get(self.album_list_url.format(self.album_id, pageNum, self.page_size),
+            track_total_count = math.ceil(album_info_data['tracksInfo']['trackTotalCount'] / self.page_size) + 1
+            while page_num <= track_total_count:
+                album_list = requests.get(self.album_list_url.format(self.album_id, page_num, self.page_size),
                                           headers=self.header).content
                 album_list_content = json.loads(album_list.decode('utf-8'))
                 count = len(album_list_content['data']['tracksAudioPlay'])
@@ -68,11 +68,11 @@ class Ximalaya():
                         episode.title = each['trackName']
                         print(self.podcast.name + '=====' + each['trackName'])
                         image = each['trackCoverPath'].split('!')[0]
-                        if (image[-4:] == '.gif' or image[-4:] == '.bmp'):
-                            episode.image = self.podcast.image
-                        else:
+                        if image[-4:] == '.png' or image[-4:] == '.jpg':
                             episode.image = image
-                        if detail_content['intro']:
+                        else:
+                            episode.image = self.podcast.image
+                        if 'intro' in detail_content:
                             episode.summary = detail_content['intro'].replace('\r\n', '')
                         else:
                             episode.summary = each['trackName']
@@ -87,7 +87,7 @@ class Ximalaya():
                         traceback.print_exc()
                 # 生成文件
                 # print self.podcast.rss_str()
-                pageNum = pageNum + 1
+                page_num = page_num + 1
             self.podcast.rss_file('ximalaya/%s.rss' % self.album_id, minimize=True)
 
     # 时间转换 参数 毫秒时间戳
