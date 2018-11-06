@@ -45,7 +45,7 @@ class Ximalaya():
             else:
                 self.podcast.description = self.podcast.name
             self.podcast.language = 'cn'
-            self.podcast.image = album_info_data['mainInfo']['cover'].split('!')[0]
+            self.podcast.image = 'https:' + album_info_data['mainInfo']['cover'].split('!')[0]
             self.podcast.feed_url = 'http://podcast.forecho.com/ximalaya/%s.rss' % self.album_id
             self.podcast.category = Category('Technology', 'Podcasting')
             self.podcast.explicit = False
@@ -69,7 +69,7 @@ class Ximalaya():
                         print(self.podcast.name + '=====' + each['trackName'])
                         image = each['trackCoverPath'].split('!')[0]
                         if image[-4:] == '.png' or image[-4:] == '.jpg':
-                            episode.image = image
+                            episode.image = 'https:' + image
                         else:
                             episode.image = self.podcast.image
                         if 'intro' in detail_content:
