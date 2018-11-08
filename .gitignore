@@ -6,3 +6,4 @@ config.yml
 .vscode
 podcast
 venv
+error.log
