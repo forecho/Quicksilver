@@ -8,6 +8,22 @@
 
 ## 安装
 
+
+
+### Docker 方式
+
+```
+docker build -t podcast:0.1 .
+docker run --rm podcast:0.1 python app.py ximalaya 8475135,269179
+```
+
+```
+docker image ls | grep podcast
+```
+
+
+### 传统方式
+
 安装 pip
 
 ```shell
