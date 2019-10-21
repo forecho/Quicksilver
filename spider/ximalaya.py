@@ -9,7 +9,9 @@ import pytz
 import requests
 import hashlib
 import random
+import sys
 import time
+import os
 from podgen import Media, Podcast, Person, Category
 
 
@@ -26,12 +28,12 @@ class Ximalaya():
         self.s = requests.session()
         self.header = {
             'Accept': 'application/json, text/javascript, */*; q=0.01',
-            'X-Requested-With': 'XMLHttpRequest',
             'User-Agent': 'User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json;charset=UTF-8',
             'Referer': self.album_url.format(self.album_id),
-            'Cookie': '_ga=GA1.2.1628478964.1476015684; _gat=1',
-            'Host': 'www.ximalaya.com'
+            'Accept-Encoding': "gzip, deflate",
+            'Connection': "keep-alive",
+            'cache-control': "no-cache",
         }
 
     def album(self):
@@ -62,14 +64,15 @@ class Ximalaya():
             # py2 +1
             track_total_count = math.ceil(album_info_data['tracksInfo']['trackTotalCount'] / self.page_size) + 1
             while page_num <= track_total_count:
+                self.header["Host"] = "www.ximalaya.com"
                 album_list = self.s.get(self.album_list_url.format(self.album_id, page_num, self.page_size),
                                           headers=self.header).content
                 album_list_content = json.loads(album_list.decode('utf-8'))
                 count = len(album_list_content['data']['tracksAudioPlay'])
                 for each in album_list_content['data']['tracksAudioPlay']:
                     try:
-                        time.sleep(10)
-                        detail = self.s.get(self.detail_url.format(each['trackId']), headers=self.header).content
+                        self.header["Host"] = "mobile.ximalaya.com"
+                        detail = requests.get(self.detail_url.format(each['trackId']), headers=self.header).content
                         detail_content = json.loads(detail.decode('utf-8'))
                         episode = self.podcast.add_episode()
                         episode.id = str(each['index'])

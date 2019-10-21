@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import argparse
 import time
+import traceback
 
 from spider.qingting import Qingting
 from spider.ximalaya import Ximalaya
@@ -24,6 +25,7 @@ def main():
             my_instance.album()
         except Exception as e:
             print('异常:', e)
+            traceback.print_exc()
             curr_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             log.write("{}：爬取{}的{}失败：{}\n".format(curr_time, args.channel, str(album_id), str(e)))
 
