@@ -9,9 +9,7 @@ import pytz
 import requests
 import hashlib
 import random
-import sys
 import time
-import os
 from podgen import Media, Podcast, Person, Category
 
 
