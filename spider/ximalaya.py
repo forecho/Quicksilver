@@ -68,7 +68,7 @@ class Ximalaya():
                 count = len(album_list_content['data']['tracksAudioPlay'])
                 for each in album_list_content['data']['tracksAudioPlay']:
                     try:
-                        print(self.detail_url.format(each['trackId']))
+                        time.sleep(10)
                         detail = self.s.get(self.detail_url.format(each['trackId']), headers=self.header).content
                         detail_content = json.loads(detail.decode('utf-8'))
                         episode = self.podcast.add_episode()
