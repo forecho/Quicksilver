@@ -1,11 +1,11 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import json
+import math
 import traceback
 from datetime import datetime
 
 import pytz
-import math
 import requests
 import hashlib
 import random
@@ -52,7 +52,7 @@ class Ximalaya():
             else:
                 self.podcast.description = self.podcast.name
             self.podcast.language = 'cn'
-            self.podcast.image = album_info_data['mainInfo']['cover'].split('!')[0]
+            self.podcast.image = 'https:' + album_info_data['mainInfo']['cover'].split('!')[0]
             self.podcast.feed_url = 'http://podcast.forecho.com/ximalaya/%s.rss' % self.album_id
             self.podcast.category = Category('Technology', 'Podcasting')
             self.podcast.explicit = False
@@ -76,11 +76,11 @@ class Ximalaya():
                         episode.title = each['trackName']
                         print(self.podcast.name + '=====' + each['trackName'])
                         image = each['trackCoverPath'].split('!')[0]
-                        if image[-4:] == '.gif' or image[-4:] == '.bmp':
-                            episode.image = self.podcast.image
+                        if image[-4:] == '.png' or image[-4:] == '.jpg':
+                            episode.image = 'https:' + image
                         else:
-                            episode.image = image
-                        if detail_content['intro']:
+                            episode.image = self.podcast.image
+                        if 'intro' in detail_content:
                             episode.summary = detail_content['intro'].replace('\r\n', '')
                         else:
                             episode.summary = each['trackName']

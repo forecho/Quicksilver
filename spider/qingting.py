@@ -19,9 +19,9 @@ class Qingting(object):
 
     def album(self):
         album_info_content = requests.get(self.album_info_api).content
-        album_info_data = json.loads(album_info_content)
+        album_info_data = json.loads(album_info_content.decode('utf-8'))
         album_list_content = requests.get(self.album_list_api).content
-        album_list_data = json.loads(album_list_content)
+        album_list_data = json.loads(album_list_content.decode('utf-8'))
 
         self.podcast = Podcast()
         self.podcast.name = album_info_data['data']['title']
